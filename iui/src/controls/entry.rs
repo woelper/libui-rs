@@ -1,14 +1,17 @@
 //! User input mechanisms: numbers, colors, and text in various forms.
+//!
+//! All text buffers accept and return `\n` line endings; if on Windows, the appropriate
+//! `\r\n` for display are added and removed by the controls.
 
 use super::Control;
 use std::os::raw::c_void;
-use std::ffi::{CStr, CString};
 use std::i32;
 use std::mem;
-use ui::UI;
 use ui_sys::{
     self, uiCheckbox, uiCombobox, uiControl, uiEntry, uiMultilineEntry, uiSlider, uiSpinbox,
 };
+use ui::UI;
+use str_tools::{from_toolkit_string, to_toolkit_string};
 
 pub trait NumericEntry {
     fn value(&self, ctx: &UI) -> i32;
@@ -137,14 +140,11 @@ impl MultilineEntry {
 
 impl TextEntry for Entry {
     fn value(&self, _ctx: &UI) -> String {
-        unsafe {
-            CStr::from_ptr(ui_sys::uiEntryText(self.uiEntry))
-                .to_string_lossy()
-                .into_owned()
-        }
+        unsafe { from_toolkit_string(ui_sys::uiEntryText(self.uiEntry)) }
     }
+
     fn set_value(&mut self, _ctx: &UI, value: &str) {
-        let cstring = CString::new(value.as_bytes().to_vec()).unwrap();
+        let cstring = to_toolkit_string(value);
         unsafe { ui_sys::uiEntrySetText(self.uiEntry, cstring.as_ptr()) }
     }
 
@@ -161,9 +161,7 @@ impl TextEntry for Entry {
 
         extern "C" fn c_callback(entry: *mut uiEntry, data: *mut c_void) {
             unsafe {
-                let string = CStr::from_ptr(ui_sys::uiEntryText(entry))
-                    .to_string_lossy()
-                    .into_owned();
+                let string = from_toolkit_string(ui_sys::uiEntryText(entry));
                 mem::transmute::<*mut c_void, &mut Box<FnMut(String)>>(data)(string);
                 mem::forget(entry);
             }
@@ -174,13 +172,12 @@ impl TextEntry for Entry {
 impl TextEntry for MultilineEntry {
     fn value(&self, _ctx: &UI) -> String {
         unsafe {
-            CStr::from_ptr(ui_sys::uiMultilineEntryText(self.uiMultilineEntry))
-                .to_string_lossy()
-                .into_owned()
+            from_toolkit_string(ui_sys::uiMultilineEntryText(self.uiMultilineEntry))
         }
     }
+
     fn set_value(&mut self, _ctx: &UI, value: &str) {
-        let cstring = CString::new(value.as_bytes().to_vec()).unwrap();
+        let cstring = to_toolkit_string(value);
         unsafe { ui_sys::uiMultilineEntrySetText(self.uiMultilineEntry, cstring.as_ptr()) }
     }
 
@@ -197,9 +194,7 @@ impl TextEntry for MultilineEntry {
 
         extern "C" fn c_callback(entry: *mut uiMultilineEntry, data: *mut c_void) {
             unsafe {
-                let string = CStr::from_ptr(ui_sys::uiMultilineEntryText(entry))
-                    .to_string_lossy()
-                    .into_owned();
+                let string = from_toolkit_string(ui_sys::uiMultilineEntryText(entry));
                 mem::transmute::<*mut c_void, &mut Box<FnMut(String)>>(data)(string);
                 mem::forget(entry);
             }
@@ -222,7 +217,7 @@ impl Combobox {
     /// Adds a new option to the combination box.
     pub fn append(&self, _ctx: &UI, name: &str) {
         unsafe {
-            let c_string = CString::new(name.as_bytes().to_vec()).unwrap();
+            let c_string = to_toolkit_string(name);
             ui_sys::uiComboboxAppend(self.uiCombobox, c_string.as_ptr())
         }
     }
@@ -260,7 +255,7 @@ define_control! {
 impl Checkbox {
     // Create a new Checkbox which can produce values from `min` to `max`.
     pub fn new(_ctx: &UI, text: &str) -> Self {
-        let c_string = CString::new(text.as_bytes().to_vec()).unwrap();
+        let c_string = to_toolkit_string(text);
         unsafe { Checkbox::from_raw(ui_sys::uiNewCheckbox(c_string.as_ptr())) }
     }
 

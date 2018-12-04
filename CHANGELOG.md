@@ -8,7 +8,8 @@ project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-No additional API surface.
+* `str_tools` module provides utilities for converting to and from system `CString` and
+`CStr` values, while enforcing correct newline values (CR vs CRLF).
 
 ### Changed
 
@@ -24,10 +25,13 @@ No deprecations.
 ### Removed
 
 * `Transform` no longer implements `PartialEq` as the existing implementation was broken.
+* `Button` and `Label` no longer implement `text_ref` as we cannot ensure toolkit newline
+compliance.
 
 ### Fixed
 
 * `VerticalBox` and `HorizontalBox` no longer link to the removed `BoxExt` trait.
+* Text no longer uses incorrect newlines per platform.
 
 ### Security
 
