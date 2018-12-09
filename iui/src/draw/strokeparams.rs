@@ -1,5 +1,5 @@
-use std::os::raw::c_double;
 use std::marker::PhantomData;
+use std::os::raw::c_double;
 use ui::UI;
 use ui_sys::uiDrawStrokeParams;
 
