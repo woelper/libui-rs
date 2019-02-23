@@ -1,8 +1,8 @@
-extern crate cmake;
 extern crate bindgen;
+extern crate cmake;
 
-use cmake::Config;
 use bindgen::Builder as BindgenBuilder;
+use cmake::Config;
 
 use std::env;
 use std::path::{Path, PathBuf};
@@ -63,8 +63,7 @@ fn main() {
         }
         dst = dst.join(&postfix);
     } else {
-        dst = env::current_dir()
-            .expect("Unable to retrieve current directory location.");
+        dst = env::current_dir().expect("Unable to retrieve current directory location.");
         dst.push("lib");
     }
 

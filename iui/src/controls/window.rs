@@ -21,7 +21,7 @@ pub enum WindowType {
     NoMenubar,
 }
 
-define_control!{
+define_control! {
     /// Contains a single child control and displays it and its children in a window on the screen.
     rust_type: Window,
     sys_type: uiWindow

@@ -66,7 +66,7 @@ impl NumericEntry for Spinbox {
 
     fn on_changed<'ctx, F>(&mut self, _ctx: &'ctx UI, callback: F)
     where
-        F: FnMut(i32) + 'static
+        F: FnMut(i32) + 'static,
     {
         extern "C" fn c_callback<G>(spinbox: *mut uiSpinbox, data: *mut c_void)
         where
@@ -99,7 +99,7 @@ impl NumericEntry for Slider {
 
     fn on_changed<'ctx, F>(&mut self, _ctx: &'ctx UI, callback: F)
     where
-        F: FnMut(i32) + 'static
+        F: FnMut(i32) + 'static,
     {
         extern "C" fn c_callback<G>(slider: *mut uiSlider, data: *mut c_void)
         where
@@ -318,7 +318,9 @@ impl RadioButtons {
 
     pub fn append(&self, _ctx: &UI, name: &str) {
         let c_string = CString::new(name.as_bytes().to_vec()).unwrap();
-        unsafe { ui_sys::uiRadioButtonsAppend(self.uiRadioButtons, c_string.as_ptr()); }
+        unsafe {
+            ui_sys::uiRadioButtonsAppend(self.uiRadioButtons, c_string.as_ptr());
+        }
     }
 
     pub fn selected(&self, _ctx: &UI) -> i32 {
@@ -326,7 +328,9 @@ impl RadioButtons {
     }
 
     pub fn set_selected(&mut self, _ctx: &UI, idx: i32) {
-        unsafe { ui_sys::uiRadioButtonsSetSelected(self.uiRadioButtons, idx); }
+        unsafe {
+            ui_sys::uiRadioButtonsSetSelected(self.uiRadioButtons, idx);
+        }
     }
 
     pub fn on_selected<'ctx, F: FnMut(i32) + 'static>(&self, _ctx: &'ctx UI, callback: F) {

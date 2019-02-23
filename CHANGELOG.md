@@ -21,6 +21,7 @@ project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 * Many APIs which took `u64` or `i64` arguments now take `i32` for wider compatibility
 * `UI::queue_main` and `UI::on_should_quit` now require passed closures to be `'static`, for soundness
 * All callback registration functions require that their callbacks live at least as long as the `UI` token, for soundness
+* The semi-unstable `iui::draw` subsystem is again exported to downstream consumers of the `iui` crate.
 
 ### Deprecated
 
@@ -33,6 +34,7 @@ No deprecations.
 ### Fixed
 
 * `VerticalBox` and `HorizontalBox` no longer link to the removed `BoxExt` trait.
+* `ui-sys` now builds on modern macOS.
 
 ### Security
 
