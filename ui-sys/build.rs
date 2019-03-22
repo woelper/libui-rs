@@ -51,6 +51,7 @@ fn main() {
     let mut dst;
     if cfg!(feature = "build") {
         let mut cfg = Config::new("libui");
+        cfg.define("BUILD_SHARED_LIBS", "OFF");
         cfg.build_target("").profile("release");
         if apple {
             cfg.cxxflag("--stdlib=libc++");
@@ -76,5 +77,11 @@ fn main() {
     }
 
     println!("cargo:rustc-link-search=native={}", dst.display());
-    println!("cargo:rustc-link-lib={}", libname);
+    //println!("cargo:rustc-link-lib={}", libname);
+        println!("cargo:rustc-link-lib=static={}", libname);
+    if cfg!(unix) && !cfg!(target_os = "macos") {
+        println!("cargo:rustc-link-lib=gtk-3");
+        println!("cargo:rustc-link-lib=cairo");
+        println!("cargo:rustc-link-lib=pango-1.0");
+    }
 }
